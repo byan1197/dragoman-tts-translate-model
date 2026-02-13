@@ -1,0 +1,39 @@
+services:
+  faster-whisper:
+    image: lscr.io/linuxserver/faster-whisper:latest
+    container_name: faster-whisper
+    platform: linux/amd64
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - WHISPER_MODEL=medium
+      - WHISPER_COMPUTE_TYPE=int8
+      - LOCAL_ONLY=true
+      - WYOMING_DEBUG=1
+      - DEBUG=true
+    volumes:
+      - ./config:/config
+    ports:
+      - 10300:10300
+    # AMD GPU (ROCm) passthrough via WSL2 — requires ROCm drivers on Windows host
+    devices:
+      - /dev/kfd:/dev/kfd
+      - /dev/dri:/dev/dri
+    group_add:
+      - video
+      - render
+    restart: unless-stopped
+
+  libretranslate:
+    image: libretranslate/libretranslate:latest
+    container_name: libretranslate
+    platform: linux/amd64
+    environment:
+      - LT_LOAD_ONLY=en,es,fr,de,ja,zh,vi
+      - LT_DEBUG=true
+    ports:
+      - 5050:5000
+    restart: unless-stopped
+    volumes:
+      - ./libretranslate_data:/home/libretranslate/.local

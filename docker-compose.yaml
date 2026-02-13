@@ -1,0 +1,36 @@
+services:
+  faster-whisper:
+    image: lscr.io/linuxserver/faster-whisper:latest
+    container_name: faster-whisper
+    # Forces the use of the ARM64 variant for the M4 chip
+    platform: linux/arm64
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - WHISPER_MODEL=small
+      - WHISPER_COMPUTE_TYPE=float32
+      - LOCAL_ONLY=true
+      - WYOMING_DEBUG=1
+      - DEBUG=true
+    volumes:
+      # Use a relative path or a valid Mac path
+      - ./whisper_config:/config
+    ports:
+      - 10300:10300
+    # On Apple Silicon, Rosetta 2 is usually not needed if using the arm64 image,
+    # but ensuring the restart policy is robust helps with VM wake-ups.
+    restart: unless-stopped
+
+  libretranslate:
+    image: libretranslate/libretranslate:latest
+    container_name: libretranslate
+    platform: linux/arm64
+    environment:
+      - LT_LOAD_ONLY=en,es,fr,de,ja,zh,vi
+      - LT_DEBUG=true
+    ports:
+      - 5050:5000
+    restart: unless-stopped
+    volumes:
+      - ./translate_config:/home/libretranslate/.local
