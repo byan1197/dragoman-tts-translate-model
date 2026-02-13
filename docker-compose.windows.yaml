@@ -29,6 +29,7 @@ services:
     image: libretranslate/libretranslate:latest
     container_name: libretranslate
     platform: linux/amd64
+    user: "1000:1000"
     environment:
       - LT_LOAD_ONLY=en,es,fr,de,ja,zh,vi
       - LT_DEBUG=true
